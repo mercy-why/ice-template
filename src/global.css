@@ -1,0 +1,10 @@
+@import 'antd/dist/antd.css';
+#ice-container{
+  height: 100%;
+}
+body {
+  -webkit-font-smoothing: antialiased;
+}
+.hand{
+  cursor: pointer;
+}
