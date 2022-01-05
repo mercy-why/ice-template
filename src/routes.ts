@@ -3,6 +3,7 @@ import Layout from '@/Layouts/BasicLayout';
 import NotFound from '@/components/NotFound';
 import Login from '@/pages/Login';
 import Interface from '@/pages/System/Interface';
+import InterfaceList from '@/pages/System/Interface/list';
 import User from '@/pages/System/User';
 import Role from '@/pages/System/Role';
 import Auth from '@/pages/System/Auth';
@@ -34,6 +35,12 @@ const routerConfig: IRouterConfig[] = [
           {
             path: '/interface',
             component: Interface,
+            exact: true,
+          },
+          {
+            path: '/interface/:id',
+            component: InterfaceList,
+            exact: true,
           },
         ],
       },

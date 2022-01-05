@@ -25,6 +25,7 @@ export default function BasicLayout({ children, location }) {
       style={{
         minHeight: '100vh',
       }}
+      onBack={() => null}
       location={{
         pathname: location.pathname,
       }}

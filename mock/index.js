@@ -67,7 +67,7 @@ module.exports = {
           children: [
             {
               id: 6,
-              name: '接口管理',
+              name: '权限管理',
               type: 1,
               state: 1,
               url: '/system/interface',

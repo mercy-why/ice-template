@@ -1,25 +1,35 @@
 import { useRef } from 'react';
-import { PlusOutlined, EllipsisOutlined } from '@ant-design/icons';
-import { Button, Tag, Space, Menu, Dropdown } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable, { TableDropdown } from '@ant-design/pro-table';
 import { getSysModuleList } from '../services';
+import { Link } from 'ice';
 
-interface GithubIssueItem {
+interface tableItem {
   id: number;
   status: number;
   moduleName: string;
   remark: string;
 }
-
-const columns: Array<ProColumns<GithubIssueItem>> = [
+const linkRender = (t: string, r: tableItem) => (
+  <Link
+    to={{
+      pathname: `/system/interface/${r.id}`,
+      search: `moduleName=${r.moduleName}模块`,
+    }}
+  >
+    {t}
+  </Link>
+);
+const columns: Array<ProColumns<tableItem>> = [
   {
-    title: '模块名称',
+    title: '权限名称',
     dataIndex: 'moduleName',
-    ellipsis: true,
+    render: linkRender,
   },
   {
-    title: '模块状态',
+    title: '权限状态',
     dataIndex: 'status',
     search: false,
     valueEnum: {
@@ -34,7 +44,7 @@ const columns: Array<ProColumns<GithubIssueItem>> = [
     },
   },
   {
-    title: '模块描述',
+    title: '权限描述',
     dataIndex: 'remark',
     ellipsis: true,
     search: false,
@@ -51,70 +61,73 @@ const columns: Array<ProColumns<GithubIssueItem>> = [
       >
         编辑
       </a>,
-      <TableDropdown
-        key="actionGroup"
-        onSelect={() => action?.reload()}
-        menus={[
-          { key: 'copy', name: '复制' },
-          { key: 'delete', name: '删除' },
-        ]}
-      />,
+      linkRender('分配功能', record),
+      <a
+        key="del"
+        onClick={() => {
+          action.reload;
+        }}
+      >
+        删除
+      </a>,
     ],
   },
 ];
-const expandedRowRender = (data) => {
-  return (
-    <ProTable
-      columns={[
-        {
-          dataIndex: 'moduleName',
-          ellipsis: true,
-          search: false,
-        },
-        {
-          dataIndex: 'status',
-          search: false,
-          valueEnum: {
-            0: {
-              text: '停用',
-              status: 'Error',
-            },
-            1: {
-              text: '正常',
-              status: 'Success',
-            },
-          },
-        },
-        {
-          dataIndex: 'remark',
-          ellipsis: true,
-          search: false,
-        },
-        {
-          title: 'Action',
-          dataIndex: 'operation',
-          key: 'operation',
-          valueType: 'option',
-          render: () => [<a key="Pause">Pause</a>, <a key="Stop">Stop</a>],
-        },
-      ]}
-      headerTitle={false}
-      rowKey="id"
-      search={false}
-      editable={{
-        type: 'multiple',
-      }}
-      options={false}
-      dataSource={data.childList}
-      pagination={false}
-    />
-  );
-};
+// const expandedRowRender = (data: tableItem) => {
+//   return (
+//     <ProTable
+//       tableStyle={{ paddingLeft: 40 }}
+//       columns={[
+//         {
+//           dataIndex: 'moduleName',
+//           search: false,
+//           render: linkRender,
+//         },
+//         {
+//           dataIndex: 'status',
+//           search: false,
+//           valueEnum: {
+//             0: {
+//               text: '停用',
+//               status: 'Error',
+//             },
+//             1: {
+//               text: '正常',
+//               status: 'Success',
+//             },
+//           },
+//         },
+//         {
+//           dataIndex: 'remark',
+//           ellipsis: true,
+//           search: false,
+//         },
+//         {
+//           title: 'Action',
+//           dataIndex: 'operation',
+//           key: 'operation',
+//           valueType: 'option',
+//           render: () => [<a key="Pause">Pause</a>, <a key="Stop">Stop</a>],
+//         },
+//       ]}
+//       headerTitle={false}
+//       rowKey="id"
+//       search={false}
+//       editable={{
+//         type: 'multiple',
+//       }}
+//       showHeader={false}
+//       options={false}
+//       dataSource={data.childList}
+//       pagination={false}
+//     />
+//   );
+// };
 
 export default () => {
   const actionRef = useRef<ActionType>();
   return (
-    <ProTable<GithubIssueItem>
+    <ProTable<tableItem>
       columns={columns}
       actionRef={actionRef}
       request={async () => {
@@ -147,8 +160,8 @@ export default () => {
       pagination={false}
       dateFormatter="string"
       options={false}
-      headerTitle="接口管理"
-      expandable={{ expandedRowRender }}
+      headerTitle="权限管理"
+      // expandable={{ expandedRowRender }}
       toolBarRender={() => [
         <Button key="button" icon={<PlusOutlined />} type="primary">
           新建

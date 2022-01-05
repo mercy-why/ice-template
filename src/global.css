@@ -8,3 +8,10 @@ body {
 .hand{
   cursor: pointer;
 }
+.form-x.form-x{
+  padding:0 24px 24px;
+  background: #fff;
+}
+.form-x{
+  text-align: center;
+}
