@@ -1,42 +1,38 @@
 import styles from './index.module.less';
-import { Form, Input, Button, Space } from 'antd';
+import { Form, Input, Button, Checkbox, Space } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useState, useEffect } from 'react';
-import { useRequest, useHistory, config } from 'ice';
-import API from './services';
-import { generateUUID } from '@/utils';
-interface values {
+import { useRequest, useHistory } from 'ice';
+import { loginReq, captchaImage } from './services';
+
+interface loginParams {
   account: string;
   password: string;
+  rememberMe: boolean;
+  captcha: string;
 }
-interface response {
-  token: string;
-  code: number;
-}
+
 function Login() {
   const [form] = Form.useForm();
-  const [verifyCode, changeCode] = useState('');
-  const [icode, changeIcode] = useState('');
   const history = useHistory();
-  const loginFn = (values: values) => {
-    API.login({ ...values }).then((res: response) => {
-      if (res) {
-        localStorage.setItem('token', res.token);
+
+  const { data: codeData, refresh } = useRequest(captchaImage, {
+    manual: false,
+  });
+  const { uuid, img } = codeData || {};
+  const loginFn = (values: loginParams) => loginReq({ ...values, uuid });
+  const { loading, request } = useRequest(loginFn, {
+    onSuccess: (res) => {
+      if (res.data.code === 0) {
+        const { jwt } = res.headers;
+        localStorage.setItem('jwt', jwt);
         history.push('/');
-        return Promise.resolve(res);
       } else {
-        return Promise.reject(res);
+        refresh();
       }
-    });
-  };
-  const { loading, request } = useRequest(loginFn);
-  const reload = () => {
-    const code = generateUUID();
-    const url = `${config.baseUrl}/validCode/getImg?icode=${code}`;
-    changeCode(url);
-    changeIcode(code);
-  };
-  const checkVCode = async (rule, value) => {
+    },
+  });
+
+  const checkVCode = async (_: any, value: string) => {
     if (!value) {
       return Promise.reject(new Error('请输入验证码'));
     } else if (!/^[A-Za-z0-9]{3,4}$/.test(value)) {
@@ -50,7 +46,13 @@ function Login() {
       <div className={styles['login-content']}>
         <div className={styles['login-form']}>
           <div className={styles['title']}>管理平台</div>
-          <Form form={form} className={styles['form-box']} onFinish={request} validateTrigger="onBlur">
+          <Form
+            form={form}
+            className={styles['form-box']}
+            onFinish={request}
+            validateTrigger="onBlur"
+            initialValues={{ rememberMe: false }}
+          >
             <div className={styles['sub-title']}>账号密码登录</div>
             <Form.Item name="account" rules={[{ required: true, message: '请输入账号' }]}>
               <Input autoComplete="username" prefix={<UserOutlined />} placeholder="请输入账号" />
@@ -63,14 +65,17 @@ function Login() {
                 placeholder="请输入密码"
               />
             </Form.Item>
-            {/* <Form.Item>
+            <Form.Item>
               <Space className={styles['code-x']}>
-                <Form.Item name="verifyCode" noStyle rules={[{ validator: checkVCode }]}>
+                <Form.Item name="captcha" noStyle rules={[{ validator: checkVCode }]}>
                   <Input placeholder="请输入验证码" />
                 </Form.Item>
-                <img className={styles['verify-x']} onClick={reload} src={verifyCode} />
+                <img className={styles['verify-x']} onClick={refresh} src={`data:image/jpg;base64,${img}`} />
               </Space>
-            </Form.Item> */}
+            </Form.Item>
+            <Form.Item name="rememberMe" valuePropName="checked">
+              <Checkbox>记住我</Checkbox>
+            </Form.Item>
             <Button type="primary" loading={loading} block htmlType="submit" className={styles['sub-x']}>
               {!loading ? '登录' : '登录中...'}
             </Button>

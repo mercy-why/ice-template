@@ -2,10 +2,11 @@ import { Dropdown, Avatar, Menu, Space } from 'antd';
 import { useCallback } from 'react';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import { UserOutlined, LogoutOutlined, SettingOutlined } from '@ant-design/icons';
-import { getInitialData, history } from 'ice';
+import { getInitialData, useHistory } from 'ice';
 function RightContent() {
   const initialData = getInitialData();
   const { userName } = initialData;
+  const history = useHistory();
   const loginOut = async () => {
     // await outLogin();
     console.log(history.location);
@@ -34,12 +35,12 @@ function RightContent() {
     <Menu selectedKeys={[]} onClick={onMenuClick}>
       <Menu.Item key="settings">
         <SettingOutlined />
-        修改密码
+        <span className="ml5">修改密码</span>
       </Menu.Item>
       <Menu.Divider />
       <Menu.Item key="logout">
         <LogoutOutlined />
-        退出登录
+        <span className="ml5">退出登录</span>
       </Menu.Item>
     </Menu>
   );

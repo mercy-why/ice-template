@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "dependencies": {
     "@ant-design/icons": "^4.0.2",
+    "@ant-design/pro-card": "^1.18.21",
     "@ant-design/pro-layout": "^6.5.1",
     "@ant-design/pro-table": "^2.61.9",
     "antd": "^4.0.0",

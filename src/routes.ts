@@ -2,11 +2,10 @@ import { IRouterConfig } from 'ice';
 import Layout from '@/Layouts/BasicLayout';
 import NotFound from '@/components/NotFound';
 import Login from '@/pages/Login';
-import Interface from '@/pages/System/Interface';
-import InterfaceList from '@/pages/System/Interface/list';
+import Auth from '@/pages/System/Auth';
+import InterfaceList from '@/pages/System/Auth/list';
 import User from '@/pages/System/User';
 import Role from '@/pages/System/Role';
-import Auth from '@/pages/System/Auth';
 
 const routerConfig: IRouterConfig[] = [
   {
@@ -31,14 +30,10 @@ const routerConfig: IRouterConfig[] = [
           {
             path: '/auth',
             component: Auth,
-          },
-          {
-            path: '/interface',
-            component: Interface,
             exact: true,
           },
           {
-            path: '/interface/:id',
+            path: '/auth/:id',
             component: InterfaceList,
             exact: true,
           },

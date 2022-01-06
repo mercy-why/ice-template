@@ -81,7 +81,6 @@ export default () => {
       ],
     },
   ];
-
   return (
     <ProForm<{
       table: DataSourceType[];
@@ -91,8 +90,8 @@ export default () => {
       submitter={{
         render: (props, doms) => {
           return [
-            <Button htmlType="button" onClick={history.goBack} key="edit">
-              取消
+            <Button htmlType="button" onClick={history?.goBack} key="edit">
+              返回权限列表
             </Button>,
             ...doms,
           ];
@@ -116,19 +115,6 @@ export default () => {
             data,
             success: true,
           };
-        }}
-        toolBarRender={() => {
-          return [
-            <Button
-              type="primary"
-              key="save"
-              onClick={() => {
-                // dataSource 就是当前数据，可以调用 api 将其保存
-              }}
-            >
-              导入数据
-            </Button>,
-          ];
         }}
         columns={columns}
         editable={{

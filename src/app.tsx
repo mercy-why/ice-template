@@ -1,4 +1,4 @@
-import { runApp, IAppConfig, config as iceConfig } from 'ice';
+import { runApp, IAppConfig, config as iceConfig, history } from 'ice';
 import { notification } from 'antd';
 import sysService from '@/services/system';
 import { codeMessage } from '@/utils';
@@ -8,7 +8,7 @@ const appConfig: IAppConfig = {
     rootId: 'ice-container',
     getInitialData: async () => {
       try {
-        const data = await sysService.getCurrentUser();
+        const { data } = await sysService.getCurrentUser();
         const { name: userName, currentMenuList: menuList, id: userId, currentOrg, orgIdMapRoleList } = data;
         // 任意的操作：比如读写 cookie 等
         return {
@@ -29,15 +29,15 @@ const appConfig: IAppConfig = {
   },
   request: {
     baseURL: iceConfig.baseURL,
-    // ...RequestConfig 其他参数
-    method: 'post',
     // 拦截器
     interceptors: {
       request: {
         onConfig: (config) => {
-          const Authorization = localStorage.getItem('token');
+          const jwt = localStorage.getItem('jwt');
           // 发送请求前：可以对 RequestConfig 做一些统一处理
-          // Object.assign(config.headers, { Authorization });
+          if (jwt && history?.location.pathname !== '/login') {
+            Object.assign(config.headers, { jwt });
+          }
           return config;
         },
         onError: (error) => {
@@ -52,18 +52,20 @@ const appConfig: IAppConfig = {
               message: '请求失败',
               description: response.data.msg,
             });
-            return Promise.reject(response);
-          } else {
-            return Promise.resolve(response.data);
           }
+          return response;
         },
         onError: (error) => {
-          const msg = error.response ? codeMessage[error.response?.status] : '';
-          // 请求出错：服务端返回错误状态码
+          const { status } = error.response || {};
+          const msg = status ? codeMessage[status] : '';
+          notification.destroy();
           notification.error({
             message: '请求失败',
             description: msg,
           });
+          if (status === 401) {
+            history?.push('/login');
+          }
           return Promise.reject(error);
         },
       },

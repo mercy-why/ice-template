@@ -3,20 +3,19 @@ import menuConfig from './menuConfig';
 import ProLayout from '@ant-design/pro-layout';
 import { getInitialData, Link } from 'ice';
 import RightContent from './rightContent';
-
 const loopMenuItem = (menus) =>
   menus &&
-  menus.map(({ id, name, children, url }) => {
+  menus.map(({ name, children, url }) => {
     return {
       path: url,
-      key: id,
+      key: url,
       name,
       icon: menuConfig[name] && createElement(menuConfig[name]),
       children: children && loopMenuItem(children),
     };
   });
 
-export default function BasicLayout({ children, location }) {
+export default function BasicLayout({ children, history }) {
   const initialData = getInitialData();
   const { menuList } = initialData;
   return (
@@ -25,9 +24,8 @@ export default function BasicLayout({ children, location }) {
       style={{
         minHeight: '100vh',
       }}
-      onBack={() => null}
       location={{
-        pathname: location.pathname,
+        pathname: history.location.pathname,
       }}
       menuDataRender={() => loopMenuItem(menuList)}
       menuItemRender={(item, defaultDom) => {
