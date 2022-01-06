@@ -98,6 +98,7 @@ module.exports = {
             },
             {
               id: 18,
+              name: '用户管理',
               type: 1,
               state: 1,
               url: '/system/role',

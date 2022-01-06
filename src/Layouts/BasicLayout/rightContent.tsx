@@ -16,7 +16,7 @@ function RightContent() {
     // Note: There may be security issues, please note
     if (window.location.pathname !== '/user/login' && !redirect) {
       history.replace({
-        pathname: '/user/login',
+        pathname: '/login',
         search: JSON.stringify({
           redirect: pathname + search,
         }),
@@ -27,7 +27,6 @@ function RightContent() {
     const { key } = event;
     if (key === 'logout') {
       loginOut();
-      return;
     }
     // history.push(`/account/${key}`);
   }, []);

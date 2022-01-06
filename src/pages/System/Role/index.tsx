@@ -67,7 +67,7 @@ export default () => {
       columns={columns}
       actionRef={actionRef}
       request={async (params) => {
-        const data = await getSysRoleList({
+        const { data } = await getSysRoleList({
           currentPage: params.current || 1,
           pageSize: params.pageSize || 10,
         });

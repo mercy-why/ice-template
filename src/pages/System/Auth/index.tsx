@@ -107,15 +107,13 @@ export default () => {
         persistenceKey: 'pro-table-singe-demos',
         persistenceType: 'localStorage',
       }}
+      search={{
+        labelWidth: 'auto',
+      }}
       rowKey="id"
       pagination={false}
       options={false}
       headerTitle="权限管理"
-      toolBarRender={() => [
-        <Button key="button" icon={<PlusOutlined />} type="primary">
-          新建
-        </Button>,
-      ]}
     />
   );
 };

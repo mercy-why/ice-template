@@ -64,7 +64,15 @@ const appConfig: IAppConfig = {
             description: msg,
           });
           if (status === 401) {
-            history?.push('/login');
+            history?.replace({
+              pathname: '/login',
+              search: `redirect=${history?.location.pathname}`,
+            });
+          }
+          if (status === 403) {
+            history?.push({
+              pathname: '/403',
+            });
           }
           return Promise.reject(error);
         },

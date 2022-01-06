@@ -1,7 +1,7 @@
 import styles from './index.module.less';
 import { Form, Input, Button, Checkbox, Space } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useRequest, useHistory } from 'ice';
+import { useRequest, useHistory, getSearchParams } from 'ice';
 import { loginReq, captchaImage } from './services';
 
 interface loginParams {
@@ -25,7 +25,8 @@ function Login() {
       if (res.data.code === 0) {
         const { jwt } = res.headers;
         localStorage.setItem('jwt', jwt);
-        history.push('/');
+        const { redirect = '/' } = getSearchParams();
+        history.push(redirect as string);
       } else {
         refresh();
       }
@@ -70,7 +71,7 @@ function Login() {
                 <Form.Item name="captcha" noStyle rules={[{ validator: checkVCode }]}>
                   <Input placeholder="请输入验证码" />
                 </Form.Item>
-                <img className={styles['verify-x']} onClick={refresh} src={`data:image/jpg;base64,${img}`} />
+                {img && <img className={styles['verify-x']} onClick={refresh} src={`data:image/jpg;base64,${img}`} />}
               </Space>
             </Form.Item>
             <Form.Item name="rememberMe" valuePropName="checked">

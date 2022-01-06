@@ -1,6 +1,7 @@
 import { IRouterConfig } from 'ice';
 import Layout from '@/Layouts/BasicLayout';
 import NotFound from '@/components/NotFound';
+import NotAccess from '@/components/NotAccess';
 import Login from '@/pages/Login';
 import Auth from '@/pages/System/Auth';
 import InterfaceList from '@/pages/System/Auth/list';
@@ -38,6 +39,10 @@ const routerConfig: IRouterConfig[] = [
             exact: true,
           },
         ],
+      },
+      {
+        path: '/403',
+        component: NotAccess,
       },
       {
         component: NotFound,
