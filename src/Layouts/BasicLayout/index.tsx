@@ -1,23 +1,31 @@
-import { createElement } from 'react';
-import menuConfig from './menuConfig';
+import { createElement, useEffect } from 'react';
 import ProLayout from '@ant-design/pro-layout';
-import { getInitialData, Link } from 'ice';
+import { Link } from 'ice';
+import store from '@/store';
 import RightContent from './rightContent';
-const loopMenuItem = (menus) =>
-  menus &&
-  menus.map(({ name, children, url }) => {
+
+const loopMenuItem = (userInfo) =>
+  userInfo?.menuList?.map(({ name, children, url, icon }) => {
+    console.log(children);
+    
     return {
       path: url,
       key: url,
       name,
-      icon: menuConfig[name] && createElement(menuConfig[name]),
+      // icon: createElement(icon),
       children: children && loopMenuItem(children),
     };
   });
 
 export default function BasicLayout({ children, history }) {
-  const initialData = getInitialData();
-  const { menuList } = initialData;
+  const [userState, userDispatchers] = store.useModel('user');
+  const { userInfo } = userState;
+  useEffect(() => {
+    if (!userInfo) {
+      userDispatchers.getUserInfo();
+    }
+  }, [userInfo, userDispatchers]);
+
   return (
     <ProLayout
       title="管理平台"
@@ -27,7 +35,7 @@ export default function BasicLayout({ children, history }) {
       location={{
         pathname: history.location.pathname,
       }}
-      menuDataRender={() => loopMenuItem(menuList)}
+      menuDataRender={() => loopMenuItem(userInfo)}
       menuItemRender={(item, defaultDom) => {
         if (!item.path) {
           return defaultDom;

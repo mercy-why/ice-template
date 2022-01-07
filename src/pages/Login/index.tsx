@@ -75,7 +75,7 @@ function Login() {
               </Space>
             </Form.Item>
             <Form.Item name="rememberMe" valuePropName="checked">
-              <Checkbox>记住我</Checkbox>
+              <Checkbox>记住我一周</Checkbox>
             </Form.Item>
             <Button type="primary" loading={loading} block htmlType="submit" className={styles['sub-x']}>
               {!loading ? '登录' : '登录中...'}

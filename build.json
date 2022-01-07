@@ -2,7 +2,19 @@
   "vite": true,
   "plugins": [
     [
+      "build-plugin-antd",
+      {
+        "disableModularImport": true,
+        "themeConfig": {
+          "primary-color": "#f40"
+        }
+      }
+    ],
+    [
       "build-plugin-ignore-style",
+      {
+        "libraryName": "@alifd/next"
+      },
       {
         "libraryName": "antd"
       }

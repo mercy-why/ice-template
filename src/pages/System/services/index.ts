@@ -50,3 +50,10 @@ export const distributeInterfaces = (data: Array<{ roleId: string; resourceId: s
     data,
   });
 };
+
+export const getMenuTree = () => {
+  return request({
+    url: '/sys/getMenuTree',
+    method: 'get',
+  });
+};
