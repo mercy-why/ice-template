@@ -5,7 +5,7 @@ import type { ProFormInstance } from '@ant-design/pro-form';
 import ProForm from '@ant-design/pro-form';
 import { getSysResourceList } from '../services';
 import { useParams, getSearchParams, history } from 'ice';
-import { Button, notification } from 'antd';
+import { Button, message } from 'antd';
 
 interface DataSourceType {
   id: React.Key;
@@ -100,9 +100,7 @@ export default () => {
       onFinish={async (values) => {
         console.log(values);
 
-        notification.success({
-          message: '提交成功',
-        });
+        message.success('提交成功');
       }}
     >
       <EditableProTable<DataSourceType>

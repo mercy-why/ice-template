@@ -3,16 +3,21 @@ import ProLayout from '@ant-design/pro-layout';
 import { Link } from 'ice';
 import store from '@/store';
 import RightContent from './rightContent';
+import iconsMap from './icons';
 
-const loopMenuItem = (userInfo) =>
-  userInfo?.menuList?.map(({ name, children, url, icon }) => {
-    console.log(children);
-    
+interface menuItem {
+  name: string;
+  icon?: string;
+  children?: menuItem[];
+  url: string;
+}
+const loopMenuItem = (menuList: menuItem[]) =>
+  menuList?.map(({ name, children, url, icon }) => {
     return {
       path: url,
       key: url,
       name,
-      // icon: createElement(icon),
+      icon: icon && iconsMap[icon] && createElement(icon),
       children: children && loopMenuItem(children),
     };
   });
@@ -35,7 +40,7 @@ export default function BasicLayout({ children, history }) {
       location={{
         pathname: history.location.pathname,
       }}
-      menuDataRender={() => loopMenuItem(userInfo)}
+      menuDataRender={() => loopMenuItem(userInfo?.menuList)}
       menuItemRender={(item, defaultDom) => {
         if (!item.path) {
           return defaultDom;

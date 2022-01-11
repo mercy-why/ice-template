@@ -33,7 +33,7 @@ export default {
   // 定义处理该模型副作用的函数
   effects: (dispatch: IRootDispatch) => ({
     async getUserInfo() {
-      const { data } = await loginUserInfo();
+      const data = await loginUserInfo();
       const { nickName, userName, currentMenuList: menuList, id: userId, currentRole, roles } = data;
       dispatch.user.update({
         userInfo: {

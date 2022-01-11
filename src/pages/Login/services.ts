@@ -6,10 +6,12 @@ export const loginReq = (data: { account: string; password: string; rememberMe: 
     method: 'post',
     data,
     withFullResponse: true,
+    instanceName: 'loginRequest',
   });
 
 export const captchaImage = () =>
   request({
     url: '/captchaImage',
     method: 'get',
+    instanceName: 'loginRequest',
   });

@@ -15,7 +15,7 @@ interface tableItem {
 const linkRender = (t: string, r: tableItem) => (
   <Link
     to={{
-      pathname: `/system/interface/${r.id}`,
+      pathname: `/system/auth/${r.id}`,
       search: `moduleName=${r.moduleName}模块`,
     }}
   >
@@ -26,7 +26,6 @@ const columns: Array<ProColumns<tableItem>> = [
   {
     title: '序号',
     dataIndex: 'index',
-    search: false,
   },
   {
     title: '权限名称',
