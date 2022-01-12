@@ -141,6 +141,7 @@ export default () => {
           const msg = isCreate ? '新增' : '编辑';
           await addOrUpdateRequest(params);
           message.success(`${msg}成功`);
+          actionRef.current?.reload(true);
         },
         actionRender: (row, config, defaultDoms) => {
           return [defaultDoms.save, defaultDoms.cancel];

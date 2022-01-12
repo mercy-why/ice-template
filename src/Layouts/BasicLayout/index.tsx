@@ -17,7 +17,7 @@ const loopMenuItem = (menuList: menuItem[]) =>
       path: url,
       key: url,
       name,
-      icon: icon && iconsMap[icon] && createElement(icon),
+      icon: icon && iconsMap[icon] && createElement(iconsMap[icon]),
       children: children && loopMenuItem(children),
     };
   });
@@ -26,10 +26,8 @@ export default function BasicLayout({ children, history }) {
   const [userState, userDispatchers] = store.useModel('user');
   const { userInfo } = userState;
   useEffect(() => {
-    if (!userInfo) {
-      userDispatchers.getUserInfo();
-    }
-  }, [userInfo, userDispatchers]);
+    userDispatchers.getUserInfo();
+  }, [userDispatchers]);
 
   return (
     <ProLayout
@@ -49,7 +47,7 @@ export default function BasicLayout({ children, history }) {
       }}
       rightContentRender={() => <RightContent />}
     >
-      <div style={{ minHeight: '60vh' }}>{children}</div>
+      <div style={{ minHeight: '60vh', height: '100%' }}>{children}</div>
     </ProLayout>
   );
 }

@@ -70,7 +70,6 @@ const columns: Array<ProColumns<tableItem>> = [
       <a
         key="del"
         onClick={() => {
-          action.reload;
         }}
       >
         删除

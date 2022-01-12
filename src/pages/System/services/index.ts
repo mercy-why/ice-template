@@ -27,7 +27,7 @@ export const getSysResourceList = (params: { moduleId: number }) => {
 };
 
 // 角色
-export const getSysRoleList = (params: { currentPage: number; pageSize: number }) => {
+export const getSysRoleList = (params: { currentPage?: number; pageSize?: number; id?: string }) => {
   return request({
     url: '/sys/getSysRoleList',
     method: 'get',
@@ -44,7 +44,7 @@ export const addOrUpdateSysRole = (data: { roleKey: string; roleName: string; id
   });
 };
 
-export const deleteSysRole = (params: {id: number}) => {
+export const deleteSysRole = (params: { id: number }) => {
   return request({
     url: '/sys/deleteSysRole',
     method: 'delete',
@@ -81,12 +81,30 @@ export const batchAddMenus = (data: {
     name: string;
     url: string;
     icon: string;
-    id: React.Key;
-    parentId?: React.Key;
+    parentId: React.Key;
   }>;
 }) => {
   return request({
     url: '/sys/batchAddMenus',
+    method: 'post',
+    data,
+  });
+};
+
+export const deleteMenus = (params: { ids: string }) => {
+  return request({
+    url: '/sys/deleteMenus',
+    method: 'delete',
+    params,
+  });
+};
+
+export const distributeMenus = (list: Array<{ roleId: React.Key; menuId: React.Key }>) => {
+  const data = {
+    roleMenuList: list,
+  };
+  return request({
+    url: '/sys/distributeMenus',
     method: 'post',
     data,
   });

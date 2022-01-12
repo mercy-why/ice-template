@@ -1,26 +1,32 @@
 import React, { useRef, useState } from 'react';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
-import { getMenuTree, updateMenu, batchAddMenus } from '../services';
-import { Button, message } from 'antd';
+import { getMenuTree, updateMenu, batchAddMenus, deleteMenus } from '../services';
+import { message, Popconfirm } from 'antd';
 import { useRequest } from 'ice';
 import type { ProFormInstance } from '@ant-design/pro-form';
 import ProForm from '@ant-design/pro-form';
 
 interface DataSourceType {
+  key: React.Key;
   id: React.Key;
   url: string;
   name: string;
   icon: string;
-  parentId?: React.Key;
+  parentId: React.Key;
   children?: DataSourceType[];
   isCreate?: boolean;
 }
-
 export default () => {
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() => []);
-  const [dataSource, setDataSource] = useState<DataSourceType[]>(() => []);
+  const [editLine, setEditLine] = useState<{ name: string; url: string; icon: string }>({
+    name: '',
+    url: '',
+    icon: '',
+  });
+  const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
   const actionRef = useRef<ActionType>();
+  const formRef = useRef<ProFormInstance<any>>();
   const createItem = () => {
     return {
       parentId: 0,
@@ -28,6 +34,8 @@ export default () => {
       url: '',
       icon: '',
       isCreate: true,
+      id: Date.now(),
+      key: Date.now(),
     };
   };
   const columns: Array<ProColumns<DataSourceType>> = [
@@ -58,30 +66,44 @@ export default () => {
       valueType: 'option',
       width: 200,
       render: (text, record, _, action) => [
-        <EditableProTable.RecordCreator
-          record={{
-            ...createItem(),
+        <a
+          key="create"
+          onClick={() => {
+            action?.addEditRecord(
+              {
+                ...createItem(),
+                parentId: record.id,
+              },
+              {
+                parentKey: record.key,
+                newRecordType: 'dataSource',
+              },
+            );
+            setExpandedRowKeys([...editableKeys, record.key]);
           }}
-          parentKey={record.id}
         >
-          <a>新增子菜单</a>
-        </EditableProTable.RecordCreator>,
+          新增子菜单
+        </a>,
         <a
           key="editable"
           onClick={() => {
-            action?.startEditable?.(record.id);
+            action?.startEditable?.(record.key);
           }}
         >
           编辑
         </a>,
-        <a
+        <Popconfirm
           key="delete"
-          onClick={() => {
-            action?.startEditable?.(record.id);
+          title="是否删除此菜单?"
+          onConfirm={async () => {
+            await deleteMenus({ ids: record.id?.toString() });
+            action?.reload(true);
           }}
+          okText="是"
+          cancelText="否"
         >
-          删除
-        </a>,
+          <a>删除</a>
+        </Popconfirm>,
       ],
     },
   ];
@@ -89,72 +111,64 @@ export default () => {
   const { request: updateReq } = useRequest(updateMenu);
   const { request: createReq } = useRequest(batchAddMenus);
 
-  const saveFn = async () => {
-    console.log(dataSource);
-    const data = [];
-    for (const item of dataSource) {
-      const { name, url, icon, isCreate, parentId } = item;
-      isCreate &&
-        data.push({
-          name,
-          url,
-          icon,
-          parentId,
-        });
-    }
-    await createReq({ sysMenuList: data });
-    message.success('保存成功');
-    actionRef.current?.reload(true);
-  };
   return (
-    <EditableProTable<DataSourceType>
-      rowKey="key"
-      expandable={{
-        // 使用 request 请求数据时无效
-        defaultExpandAllRows: true,
-      }}
-      controlled
-      headerTitle="菜单管理"
-      actionRef={actionRef}
-      toolBarRender={() => [
-        <Button key="button" onClick={saveFn} type="primary">
-          保存数据
-        </Button>,
-      ]}
-      name="table"
-      request={async () => {
-        const data = await getMenuTree();
-        return {
-          data,
-          success: true,
-        };
-      }}
-      recordCreatorProps={{
-        record: () => createItem(),
-        newRecordType: 'dataSource',
-        creatorButtonText: '新增目录菜单',
-      }}
-      columns={columns}
-      value={dataSource}
-      onChange={setDataSource}
-      editable={{
-        type: 'multiple',
-        editableKeys,
-        actionRender: (row, config, defaultDoms) => {
-          const doms = row.isCreate ? [defaultDoms.cancel] : [defaultDoms.save, defaultDoms.cancel];
-          return doms;
-        },
-        onSave: async (key, data) => {
-          const { icon, id, name, url } = data;
-          await updateReq({ icon, id, name, url });
-          message.success('编辑成功');
-          actionRef.current?.reload();
-        },
-        onChange: setEditableRowKeys,
-        onValuesChange: (record, list) => {
-          setDataSource(list);
-        },
-      }}
-    />
+    <ProForm<{
+      table: DataSourceType[];
+    }>
+      formRef={formRef}
+      submitter={false}
+      className="form-x"
+    >
+      <EditableProTable<DataSourceType>
+        rowKey={(r) => r.key}
+        headerTitle="菜单管理"
+        actionRef={actionRef}
+        name="table"
+        expandable={{
+          expandedRowKeys,
+          onExpand: (expanded, record) => {
+            if (expanded) {
+              setExpandedRowKeys([...expandedRowKeys, record.key]);
+            } else {
+              setExpandedRowKeys(expandedRowKeys.filter((x) => x !== record.key));
+            }
+          },
+        }}
+        request={async () => {
+          const data = await getMenuTree();
+          return {
+            data,
+            success: true,
+          };
+        }}
+        recordCreatorProps={{
+          record: createItem,
+          creatorButtonText: '新增目录菜单',
+        }}
+        columns={columns}
+        editable={{
+          editableKeys,
+          actionRender: (row, config, defaultDoms) => {
+            return [defaultDoms.save, defaultDoms.cancel];
+          },
+          onSave: async (key, data) => {
+            const { icon, name, url } = editLine;
+            const { isCreate, id, parentId } = data;
+            if (isCreate) {
+              await createReq({ sysMenuList: [{ icon, name, url, parentId }] });
+            } else {
+              await updateReq({ icon, id, name, url });
+            }
+            const msg = isCreate ? '新增' : '编辑';
+            message.success(`${msg}成功`);
+            actionRef.current?.reload(true);
+          },
+          onChange: setEditableRowKeys,
+          onValuesChange: (record) => {
+            setEditLine(record);
+          },
+        }}
+      />
+    </ProForm>
   );
 };
