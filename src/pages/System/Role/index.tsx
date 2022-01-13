@@ -112,14 +112,10 @@ export default () => {
     <ProTable<tableItem>
       columns={columns}
       actionRef={actionRef}
-      request={async (params) => {
-        const data = await getSysRoleList({
-          currentPage: params.current || 1,
-          pageSize: params.pageSize || 10,
-        });
+      request={async () => {
+        const data = await getSysRoleList();
         return {
-          data: data.records,
-          total: data.total,
+          data,
           success: true,
         };
       }}

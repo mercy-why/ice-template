@@ -10,7 +10,7 @@ import {
 } from '@ant-design/icons';
 import { useHistory, useRequest } from 'ice';
 import { CheckCard } from '@ant-design/pro-card';
-import { switchRole } from '@/services';
+import { switchRole, loginOut } from '@/services';
 import store from '@/store';
 
 function RightContent() {
@@ -18,13 +18,12 @@ function RightContent() {
   const { userInfo } = userState;
   const { nickName, userName, currentRole, roles } = (userInfo as any) || {};
   const [showModal, setVisible] = useState(false);
-  const [curRole, setcurRole] = useState(null);
+  const [curRole, setcurRole] = useState('');
   const history = useHistory();
-  const loginOut = async () => {
-    // await outLogin();
+  const loginOutFn = async () => {
+    await loginOut();
     const { pathname } = history.location;
     localStorage.clear();
-    // Note: There may be security issues, please note
     if (window.location.pathname !== '/login') {
       history.replace({
         pathname: '/login',
@@ -38,7 +37,7 @@ function RightContent() {
     const { key } = event;
     switch (key) {
       case 'logout':
-        loginOut();
+        loginOutFn();
         break;
       case 'changeRole':
         setVisible(true);
@@ -87,7 +86,7 @@ function RightContent() {
           >
             <CheckCard.Group
               size="small"
-              onChange={(value) => {
+              onChange={(value: string) => {
                 setcurRole(value);
               }}
               defaultValue={currentRole.id}
