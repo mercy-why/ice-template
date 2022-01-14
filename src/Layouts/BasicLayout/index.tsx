@@ -24,7 +24,7 @@ const loopMenuItem = (menuList: menuItem[]) =>
 
 export default function BasicLayout({ children, history }) {
   const [userState, userDispatchers] = store.useModel('user');
-  const { userInfo } = userState;
+  const { userInfo } = userState as any;
   useEffect(() => {
     userDispatchers.getUserInfo();
   }, [userDispatchers]);

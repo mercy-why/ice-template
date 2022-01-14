@@ -18,11 +18,18 @@ export const switchRole = (params: { roleId: string }) => {
   });
 };
 
-
 export const loginOut = () => {
   return request({
     url: '/logout',
     method: 'get',
     instanceName: 'loginRequest',
+  });
+};
+
+export const updatePwd = (data: { oldPwd: string; newPwd: string }) => {
+  return request({
+    url: '/sys/updatePwd',
+    method: 'put',
+    data,
   });
 };

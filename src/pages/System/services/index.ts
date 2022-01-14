@@ -212,3 +212,11 @@ export const deleteUser = (params: { userId: React.Key }) => {
     params,
   });
 };
+
+export const resetPwd = (params: { userId: React.Key }) => {
+  return request({
+    url: '/sys/resetPwd',
+    method: 'get',
+    params,
+  });
+};

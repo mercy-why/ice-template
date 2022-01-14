@@ -1,5 +1,6 @@
 import { IRouterConfig } from 'ice';
 import Layout from '@/Layouts/BasicLayout';
+import Home from '@/pages/Home';
 import NotFound from '@/pages/Others/NotFound';
 import NotAccess from '@/pages/Others/NotAccess';
 import Login from '@/pages/Login';
@@ -20,11 +21,16 @@ const routerConfig: IRouterConfig[] = [
     component: Layout,
     children: [
       {
+        path: '/home',
+        component: Home,
+      },
+      {
         path: '/system',
         children: [
           {
             path: '/user',
             component: User,
+            exact: true,
           },
           {
             path: '/menuManage',
@@ -50,11 +56,19 @@ const routerConfig: IRouterConfig[] = [
             component: InterfaceList,
             exact: true,
           },
+          {
+            path: '',
+            redirect: '/system/user',
+          },
         ],
       },
       {
         path: '/403',
         component: NotAccess,
+      },
+      {
+        path: '',
+        redirect: '/home'
       },
       {
         component: NotFound,

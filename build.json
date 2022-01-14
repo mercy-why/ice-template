@@ -6,7 +6,7 @@
       {
         "disableModularImport": true,
         "themeConfig": {
-          // "primary-color": "#f40"
+          "primary-color": "rgb(22, 93, 255)"
         }
       }
     ],

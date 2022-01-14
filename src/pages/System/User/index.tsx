@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
-import { getUserList, updateUser, register, deleteUser, getSysRoleList } from '../services';
+import { getUserList, updateUser, register, deleteUser, getSysRoleList, resetPwd } from '../services';
 import { message, Popconfirm, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
@@ -38,7 +38,10 @@ export default () => {
       dataIndex: 'account',
       formItemProps: () => {
         return {
-          rules: [{ required: true, message: '此项为必填项' }, { pattern: /^[a-zA-Z0-9_-]{3,16}$/, message: '用户名格式不正确' }],
+          rules: [
+            { required: true, message: '此项为必填项' },
+            { pattern: /^[a-zA-Z0-9_-]{3,16}$/, message: '用户名格式不正确' },
+          ],
         };
       },
     },
@@ -84,31 +87,44 @@ export default () => {
       valueType: 'option',
       dataIndex: 'option',
       width: 250,
-      render: (text, record, _, action) =>
-        (record.id === 1
-          ? ('')
-          : [
-            <a
-              key="editable"
-              onClick={() => {
-                action?.startEditable?.(record.id);
-              }}
-            >
-              编辑
-            </a>,
-            <Popconfirm
-              key="delete"
-              title="是否删除此用户?"
-              onConfirm={async () => {
-                await deleteUser({ userId: record.id });
-                action?.reset && action?.reset();
-              }}
-              okText="是"
-              cancelText="否"
-            >
-              <a>删除</a>
-            </Popconfirm>,
-          ]),
+      render: (text, record, _, action) => [
+        <a
+          key="editable"
+          onClick={() => {
+            action?.startEditable?.(record.id);
+          }}
+        >
+          编辑
+        </a>,
+        <Popconfirm
+          key="reset"
+          title="是否重置此用户密码?"
+          onConfirm={async () => {
+            await resetPwd({ userId: record.id });
+            message.success('密码已重置');
+          }}
+          okText="是"
+          cancelText="否"
+        >
+          <a onClick={async () => {}}>重置密码</a>
+        </Popconfirm>,
+        record.id === 1 ? (
+          ''
+        ) : (
+          <Popconfirm
+            key="delete"
+            title="是否删除此用户?"
+            onConfirm={async () => {
+              await deleteUser({ userId: record.id });
+              action?.reset && action?.reset();
+            }}
+            okText="是"
+            cancelText="否"
+          >
+            <a>删除</a>
+          </Popconfirm>
+        ),
+      ],
     },
   ];
   const createFn = () => {
@@ -146,7 +162,7 @@ export default () => {
           const roles = roleIds.map((x) => ({
             id: x,
           }));
-          const password = `${account}123`
+          const password = `${account}123`;
           if (isCreate) {
             await register({ userName, status, account, password, roles });
             actionRef.current?.reset && actionRef.current?.reset();

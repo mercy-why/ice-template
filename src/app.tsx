@@ -23,7 +23,6 @@ const appConfig: IAppConfig = {
                 Object.assign(config.headers, { jwt });
               } else {
                 history?.push('/login');
-                return Promise.reject();
               }
             }
 
@@ -40,10 +39,10 @@ const appConfig: IAppConfig = {
               message.error(response.data.msg);
               return Promise.reject(response);
             }
-            return response.data;
+            return response?.data;
           },
           onError: (error) => {
-            const { status } = error.response || {};
+            const { status } = error?.response || {};
             const msg = status ? codeMessage[status] : '';
             message.destroy();
             message.error(msg);
@@ -95,7 +94,7 @@ const appConfig: IAppConfig = {
             return response;
           },
           onError: (error) => {
-            const { status } = error.response || {};
+            const { status } = error?.response || {};
             const msg = status ? codeMessage[status] : '';
             message.destroy();
             message.error(msg);
