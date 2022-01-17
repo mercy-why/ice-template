@@ -1,6 +1,7 @@
 // src/models/user.ts
 import { loginUserInfo } from '@/services';
 import { IRootState, IRootDispatch } from '@/store';
+import { history } from 'ice';
 
 interface role {
   id: number;
@@ -33,6 +34,14 @@ export default {
   // 定义处理该模型副作用的函数
   effects: (dispatch: IRootDispatch) => ({
     async getUserInfo() {
+      const jwt = localStorage.getItem('jwt');
+      if (!jwt) {
+        history?.replace({
+          pathname: '/login',
+          search: `redirect=${history?.location.pathname}`,
+        });
+        return;
+      }
       const { data } = await loginUserInfo();
       const { nickName, userName, currentMenuList: menuList, id: userId, currentRole, roles } = data;
       dispatch.user.update({

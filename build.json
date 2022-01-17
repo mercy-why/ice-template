@@ -22,12 +22,12 @@
   ],
   "proxy": {
     "/api": {
-      "target": "http://192.168.1.29",
+      "target": "http://101.35.108.7",
       "enable": true,
-      "changeOrigin": true,
-      "pathRewrite": {
-        "/api": ""
-      }
+      "changeOrigin": true
     }
-  }
+  },
+  "publicPath": "./",
+  "outputDir": "manage-system",
+  "hash": true
 }

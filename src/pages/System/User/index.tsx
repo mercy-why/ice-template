@@ -187,7 +187,7 @@ export default () => {
       headerTitle="用户管理"
       toolBarRender={() => [
         <Button key="button" icon={<PlusOutlined />} type="primary" onClick={createFn}>
-          新增角色
+          新增用户
         </Button>,
       ]}
     />

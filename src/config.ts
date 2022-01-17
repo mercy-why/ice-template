@@ -6,6 +6,6 @@ export default {
     baseURL: '/api',
   },
   prod: {
-    baseURL: '/',
+    baseURL: '/api',
   },
 };

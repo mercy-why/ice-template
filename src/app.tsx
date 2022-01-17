@@ -36,14 +36,14 @@ const appConfig: IAppConfig = {
           onConfig: (response) => {
             // 请求成功：可以做全局的 toast 展示，或者对 response 做一些格式化
             if (response?.data.code !== 0) {
-              message.error(response.data.msg);
+              message.error(response.data.msg || '请求错误');
               return Promise.reject(response);
             }
             return response?.data;
           },
           onError: (error) => {
             const { status } = error?.response || {};
-            const msg = status ? codeMessage[status] : '';
+            const msg = status ? codeMessage[status] : '请求错误';
             message.destroy();
             message.error(msg);
             if (status === 401) {
@@ -75,7 +75,6 @@ const appConfig: IAppConfig = {
                 Object.assign(config.headers, { jwt });
               } else {
                 history?.push('/login');
-                return Promise.reject();
               }
             }
 
@@ -89,13 +88,13 @@ const appConfig: IAppConfig = {
           onConfig: (response) => {
             // 请求成功：可以做全局的 toast 展示，或者对 response 做一些格式化
             if (response?.data.code !== 0) {
-              message.error(response.data.msg);
+              message.error(response.data.msg || '请求错误');
             }
             return response;
           },
           onError: (error) => {
             const { status } = error?.response || {};
-            const msg = status ? codeMessage[status] : '';
+            const msg = status ? codeMessage[status] : '请求错误';
             message.destroy();
             message.error(msg);
             return Promise.reject(error);
