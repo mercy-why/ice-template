@@ -13,9 +13,6 @@
     [
       "build-plugin-ignore-style",
       {
-        "libraryName": "@alifd/next"
-      },
-      {
         "libraryName": "antd"
       }
     ]

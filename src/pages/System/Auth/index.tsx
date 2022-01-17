@@ -13,6 +13,7 @@ interface tableItem {
 }
 const linkRender = (t: string, r: tableItem) => (
   <Link
+    key="link"
     to={{
       pathname: `/system/auth/${r.id}`,
       search: `moduleName=${r.moduleName}模块`,
