@@ -68,7 +68,7 @@ const routerConfig: IRouterConfig[] = [
       },
       {
         path: '',
-        redirect: '/home'
+        redirect: '/home',
       },
       {
         component: NotFound,

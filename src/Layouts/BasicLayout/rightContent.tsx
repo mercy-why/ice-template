@@ -23,9 +23,7 @@ function RightContent() {
   const [curRole, setcurRole] = useState('');
   const history = useHistory();
   const loginOutFn = async () => {
-    await loginOut();
     const { pathname } = history.location;
-    localStorage.clear();
     if (window.location.pathname !== '/login') {
       history.replace({
         pathname: '/login',
@@ -34,6 +32,8 @@ function RightContent() {
         }),
       });
     }
+    await loginOut();
+    localStorage.clear();
   };
   const onMenuClick = (event: MenuInfo) => {
     const { key } = event;

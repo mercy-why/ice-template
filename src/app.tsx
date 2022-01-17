@@ -97,6 +97,12 @@ const appConfig: IAppConfig = {
             const msg = status ? codeMessage[status] : '请求错误';
             message.destroy();
             message.error(msg);
+            if (status === 401) {
+              history?.replace({
+                pathname: '/login',
+                search: `redirect=${history?.location.pathname}`,
+              });
+            }
             return Promise.reject(error);
           },
         },

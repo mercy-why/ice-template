@@ -6,7 +6,7 @@
       {
         "disableModularImport": true,
         "themeConfig": {
-          "primary-color": "rgb(22, 93, 255)"
+          "primary-color": "#334"
         }
       }
     ],
@@ -19,9 +19,12 @@
   ],
   "proxy": {
     "/api": {
-      "target": "http://101.35.108.7",
+      "target": "http://192.168.1.29",
       "enable": true,
-      "changeOrigin": true
+      "changeOrigin": true,
+      "pathRewrite": {
+        "/api": "/"
+      }
     }
   },
   "publicPath": "./",
