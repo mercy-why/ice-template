@@ -47,7 +47,7 @@ export default function BasicLayout({ children, history }) {
       }}
       rightContentRender={() => <RightContent />}
     >
-      <div style={{ minHeight: '60vh' }}>{children}</div>
+      <div style={{ minHeight: '60vh', height: '100%' }}>{children}</div>
     </ProLayout>
   );
 }

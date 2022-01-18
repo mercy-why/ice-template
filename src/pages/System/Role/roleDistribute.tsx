@@ -119,7 +119,7 @@ export default function DisturbList() {
       roleResourceList: params,
       roleId: id,
     });
-    message.success('菜单权限分配成功');
+    message.success('接口权限分配成功');
     setInterfaceStatus(true);
   };
   const chooseAll = () => {
@@ -231,7 +231,7 @@ export default function DisturbList() {
               children: 'resources',
             }}
             titleRender={(nodeData: any) =>
-              nodeData.moduleName ? nodeData.moduleName : `【${nodeData.resourceName}】${nodeData.resourceUrl}`
+              (nodeData.moduleName ? nodeData.moduleName : `【${nodeData.resourceName}】${nodeData.resourceUrl}`)
             }
           />
         </ProCard>
