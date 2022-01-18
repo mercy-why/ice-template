@@ -134,10 +134,10 @@ export const deleteSysResource = (params: { moduleId: React.Key; resourceId: Rea
   });
 };
 
-export const distributeMenus = (list: Array<{ roleId: React.Key; menuId: React.Key }>) => {
-  const data = {
-    roleMenuList: list,
-  };
+export const distributeMenus = (data: {
+  roleMenuList: Array<{ roleId: React.Key; menuId: React.Key }>;
+  roleId: React.Key;
+}) => {
   return request({
     url: '/sys/distributeMenus',
     method: 'post',
@@ -145,10 +145,10 @@ export const distributeMenus = (list: Array<{ roleId: React.Key; menuId: React.K
   });
 };
 
-export const distributeInterfaces = (list: Array<{ roleId: React.Key; resourceId: React.Key }>) => {
-  const data = {
-    roleResourceList: list,
-  };
+export const distributeInterfaces = (data: {
+  roleResourceList: Array<{ roleId: React.Key; resourceId: React.Key }>;
+  roleId: React.Key;
+}) => {
   return request({
     url: '/sys/distributeInterfaces',
     method: 'post',

@@ -81,30 +81,28 @@ export default () => {
       title: '操作',
       valueType: 'option',
       render: (text, record, _, action) => {
-        return (
-          record.roleKey !== 'ROLE_ADMIN' && [
-            <a
-              key="editable"
-              onClick={() => {
-                action?.startEditable?.(record.id);
-              }}
-            >
-              编辑
-            </a>,
-            <Popconfirm
-              key="del"
-              title="是否删除此角色?"
-              onConfirm={() => deleteRequest({ id: record.id })}
-              okText="是"
-              cancelText="否"
-            >
-              <a>删除</a>
-            </Popconfirm>,
-            <Link key="disturb" to={`/system/role/${record.id}`}>
-              分配权限
-            </Link>,
-          ]
-        );
+        return [
+          <a
+            key="editable"
+            onClick={() => {
+              action?.startEditable?.(record.id);
+            }}
+          >
+            编辑
+          </a>,
+          <Popconfirm
+            key="del"
+            title="是否删除此角色?"
+            onConfirm={() => deleteRequest({ id: record.id })}
+            okText="是"
+            cancelText="否"
+          >
+            <a>删除</a>
+          </Popconfirm>,
+          <Link key="disturb" to={`/system/role/${record.id}`}>
+            分配权限
+          </Link>,
+        ];
       },
     },
   ];

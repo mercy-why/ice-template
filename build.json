@@ -19,12 +19,13 @@
   ],
   "proxy": {
     "/api": {
-      "target": "http://192.168.1.29",
+      // "target": "http://192.168.1.29",
+      "target": "http://124.223.71.100",
       "enable": true,
       "changeOrigin": true,
-      "pathRewrite": {
-        "/api": "/"
-      }
+      // "pathRewrite": {
+      //   "/api": "/"
+      // }
     }
   },
   "publicPath": "./",

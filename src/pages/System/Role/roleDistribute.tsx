@@ -1,15 +1,8 @@
 import ProCard from '@ant-design/pro-card';
 import RcResizeObserver from 'rc-resize-observer';
 import React, { useState, useEffect } from 'react';
-import { Tree, Button, message } from 'antd';
-import {
-  getMenuTree,
-  distributeMenus,
-  getSysModuleList,
-  getSysRoleList,
-  getSysResourceList,
-  distributeInterfaces,
-} from '../services';
+import { Tree, Button, message, Space } from 'antd';
+import { getMenuTree, distributeMenus, getSysRoleList, getSysResourceList, distributeInterfaces } from '../services';
 import { useRequest, useParams, useHistory } from 'ice';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 
@@ -17,43 +10,49 @@ interface menuItem {
   id: number;
   children?: menuItem[];
 }
-interface DataNode {
-  title: string;
-  key: string;
-  isLeaf?: boolean;
-  children?: DataNode[];
-}
 
-const loopMeneId = (menuList: menuItem[], arr: number[] = []) => {
+interface interfaceItem {
+  id: number;
+  moduleName?: string;
+  resources?: Array<{
+    resourceName: string;
+    id: number;
+  }>;
+}
+const loopMenuId = (menuList: menuItem[], arr: number[] = []) => {
   menuList &&
     menuList.forEach((item) => {
       if (!item.children) {
         arr.push(item.id);
       } else {
-        loopMeneId(item.children, arr);
+        loopMenuId(item.children, arr);
       }
     });
   return arr;
 };
-function updateTreeData(list: DataNode[], key: React.Key, children: DataNode[]): DataNode[] {
-  return list.map((node) => {
-    if (node.key === key) {
-      return {
-        ...node,
-        checkable: true,
-        disableCheckbox: children?.length === 0,
-        children,
-      };
-    }
-    if (node.children) {
-      return {
-        ...node,
-        children: updateTreeData(node.children, key, children),
-      };
-    }
-    return node;
-  });
-}
+
+const loopAllMenuId = (menuList: menuItem[], arr: number[] = []) => {
+  menuList &&
+    menuList.forEach((item) => {
+      arr.push(item.id);
+      if (item.children) {
+        loopAllMenuId(item.children, arr);
+      }
+    });
+  return arr;
+};
+
+const loopInterFaceId = (list: interfaceItem[], arr: number[] = []) => {
+  list &&
+    list.forEach((item) => {
+      if (!item.resources) {
+        arr.push(item.id);
+      } else {
+        loopInterFaceId(item.resources, arr);
+      }
+    });
+  return arr;
+};
 
 export default function DisturbList() {
   const history = useHistory();
@@ -63,22 +62,15 @@ export default function DisturbList() {
   const [interfaceKeys, setInterfaceKeys] = useState<React.Key[]>([]);
   const [menuStatus, setMenuStatus] = useState(true);
   const [interfaceStatus, setInterfaceStatus] = useState(true);
+  const [interfaceExpendKeys, setInterfaceExpendKeys] = useState<React.Key[]>([]);
+  const [menuExpendKeys, setMenuExpendKeys] = useState<React.Key[]>([]);
+
   const { id } = useParams<{ id: string }>();
-  const [interfaceTreeData, setinterfaceTreeData] = useState<DataNode[]>([]);
   const { data: menuTreeData, loading: menuLoading } = useRequest(getMenuTree, {
     manual: false,
   });
-  const { loading: interfaceLoading } = useRequest(getSysModuleList, {
+  const { data: interfaceTreeData, loading: interfaceLoading } = useRequest(getSysResourceList, {
     manual: false,
-    onSuccess: (res) => {
-      setinterfaceTreeData(
-        res.map((x: { moduleName: string; id: number }) => ({
-          title: x.moduleName,
-          key: `p_${x.id}`,
-          checkable: false,
-        })),
-      );
-    },
   });
   const { data: roleInfo } = useRequest<{
     currentRoleMenuList: [
@@ -109,7 +101,10 @@ export default function DisturbList() {
       roleId: id,
       menuId: x,
     }));
-    await SetMenuReq(params);
+    await SetMenuReq({
+      roleMenuList: params,
+      roleId: id,
+    });
     message.success('菜单权限分配成功');
     setMenuStatus(true);
   };
@@ -120,31 +115,44 @@ export default function DisturbList() {
         roleId: id,
         resourceId: x,
       }));
-    await distributeInterfaces(params);
+    await distributeInterfaces({
+      roleResourceList: params,
+      roleId: id,
+    });
     message.success('菜单权限分配成功');
     setInterfaceStatus(true);
   };
+  const chooseAll = () => {
+    const keys = menuTreeData.map((x) => x.id);
+    setMenuKeys(keys);
+    setSaveMenuKeys(loopAllMenuId(menuTreeData));
+    setMenuStatus(false);
+  };
+  const chooseAllInterface = () => {
+    const keys = loopInterFaceId(interfaceTreeData);
+    setInterfaceKeys(keys);
+    setInterfaceStatus(false);
+  };
 
-  const onLoadData = ({ key, children }: any) =>
-    new Promise<void>((resolve) => {
-      if (children) {
-        resolve();
-        return;
-      }
-      getSysResourceList({ moduleId: key.substring(2) }).then((list) => {
-        const data = list.map((x) => ({
-          title: `【${x.resourceName}】${x.resourceUrl}`,
-          key: x.id,
-          isLeaf: true,
-        }));
-        setinterfaceTreeData((origin) => updateTreeData(origin, key, data));
-        resolve();
-      });
-    });
+  const expendAllInterface = () => {
+    if (interfaceExpendKeys.length === 0) {
+      setInterfaceExpendKeys(interfaceTreeData.map((x) => `_${x.id}`));
+    } else {
+      setInterfaceExpendKeys([]);
+    }
+  };
+  const expendAllMenu = () => {
+    if (menuExpendKeys.length === 0) {
+      setMenuExpendKeys(menuTreeData.map((x) => x.id));
+    } else {
+      setMenuExpendKeys([]);
+    }
+  };
+
   useEffect(() => {
     if (roleInfo) {
       const { currentRoleMenuList, currentRoleResourceList } = roleInfo;
-      const ids = loopMeneId(currentRoleMenuList);
+      const ids = loopMenuId(currentRoleMenuList);
       const urlId = currentRoleResourceList.map((x) => x.id);
       setMenuKeys(ids);
       setInterfaceKeys(urlId);
@@ -172,11 +180,14 @@ export default function DisturbList() {
       >
         <ProCard
           title="菜单权限"
-          colSpan="40%"
           extra={
-            <Button type="primary" onClick={saveMenu} loading={setBtnLoading} disabled={menuStatus}>
-              保存
-            </Button>
+            <Space size={20}>
+              <a onClick={expendAllMenu}>{`${menuExpendKeys.length === 0 ? '展开' : '收起'}全部`}</a>
+              <a onClick={chooseAll}>全选</a>
+              <Button type="primary" onClick={saveMenu} loading={setBtnLoading} disabled={menuStatus}>
+                保存
+              </Button>
+            </Space>
           }
         >
           <Tree
@@ -186,7 +197,8 @@ export default function DisturbList() {
             treeData={menuTreeData}
             checkedKeys={menuKeys}
             autoExpandParent
-            defaultExpandAll={menuTreeData?.length < 5}
+            expandedKeys={menuExpendKeys}
+            onExpand={(expandedKeys) => setMenuExpendKeys(expandedKeys)}
             fieldNames={{
               title: 'name',
               key: 'id',
@@ -197,18 +209,30 @@ export default function DisturbList() {
           title="接口权限"
           loading={interfaceLoading}
           extra={
-            <Button type="primary" onClick={saveInterface} loading={interfaceLoading} disabled={interfaceStatus}>
-              保存
-            </Button>
+            <Space size={20}>
+              <a onClick={expendAllInterface}>{`${interfaceExpendKeys.length === 0 ? '展开' : '收起'}全部`}</a>
+              <a onClick={chooseAllInterface}>全选</a>
+              <Button type="primary" onClick={saveInterface} loading={interfaceLoading} disabled={interfaceStatus}>
+                保存
+              </Button>
+            </Space>
           }
         >
           <Tree
             checkable
             selectable={false}
             checkedKeys={interfaceKeys}
+            expandedKeys={interfaceExpendKeys}
             onCheck={onInterFaceCheck}
-            treeData={interfaceTreeData}
-            loadData={onLoadData}
+            onExpand={(expandedKeys) => setInterfaceExpendKeys(expandedKeys)}
+            treeData={interfaceTreeData?.map((x: interfaceItem) => ({ ...x, id: `_${x.id}` }))}
+            fieldNames={{
+              key: 'id',
+              children: 'resources',
+            }}
+            titleRender={(nodeData: any) =>
+              nodeData.moduleName ? nodeData.moduleName : `【${nodeData.resourceName}】${nodeData.resourceUrl}`
+            }
           />
         </ProCard>
       </ProCard>

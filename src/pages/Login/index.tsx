@@ -25,8 +25,12 @@ function Login() {
       if (res.data.code === 0) {
         const { jwt } = res.headers;
         localStorage.setItem('jwt', jwt);
-        const { redirect = '/' } = getSearchParams();
-        history.push(redirect as string);
+        const { redirect } = getSearchParams();
+        if (redirect && redirect !== '/login') {
+          history.push(redirect as string);
+        } else {
+          history.push('/');
+        }
       } else {
         refresh();
       }

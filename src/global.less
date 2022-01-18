@@ -2,6 +2,12 @@
 #ice-container{
   height: 100%;
   isolation: isolate;
+  .ant-pro-basicLayout-content{
+    flex: 1;
+    overflow: auto;
+    padding: 24px;
+    margin: 0;
+  }
 }
 *, *::before, *::after {
   box-sizing: border-box;
@@ -54,4 +60,14 @@ p, h1, h2, h3, h4, h5, h6 {
 }
 .c-title{
   margin-left: 10px;
+}
+.ant-pro-basicLayout{
+  height: 100%;
+}
+.ant-layout.ant-layout-has-sider{
+  height: 100%;
+}
+.ant-pro-sider{
+  height: 100%;
+  overflow: auto;
 }
