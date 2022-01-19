@@ -76,24 +76,28 @@ export default () => {
       valueType: 'option',
       width: 200,
       render: (text, record: DataSourceType, _, action) => [
-        <a
-          key="create"
-          onClick={() => {
-            action?.addEditRecord(
-              {
-                ...createItem(),
-                parentId: record.id,
-              },
-              {
-                parentKey: record.key,
-                newRecordType: 'dataSource',
-              },
-            );
-            setExpandedRowKeys([...editableKeys, record.key]);
-          }}
-        >
-          新增子菜单
-        </a>,
+        record.parentId === 0 ? (
+          <a
+            key="create"
+            onClick={() => {
+              action?.addEditRecord(
+                {
+                  ...createItem(),
+                  parentId: record.id,
+                },
+                {
+                  parentKey: record.key,
+                  newRecordType: 'dataSource',
+                },
+              );
+              setExpandedRowKeys([...editableKeys, record.key]);
+            }}
+          >
+            新增子菜单
+          </a>
+        ) : (
+          ''
+        ),
         <a
           key="editable"
           onClick={() => {
