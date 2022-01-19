@@ -27,6 +27,16 @@ export default () => {
   const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
   const actionRef = useRef<ActionType>();
   const formRef = useRef<ProFormInstance<any>>();
+  const loopMenuId = (list: DataSourceType[], arr: React.Key[] = []) => {
+    list &&
+      list.forEach((item) => {
+        arr.push(item.id);
+        if (item.children) {
+          loopMenuId(item.children, arr);
+        }
+      });
+    return arr;
+  };
   const createItem = () => {
     return {
       parentId: 0,
@@ -65,7 +75,7 @@ export default () => {
       title: '操作',
       valueType: 'option',
       width: 200,
-      render: (text, record, _, action) => [
+      render: (text, record: DataSourceType, _, action) => [
         <a
           key="create"
           onClick={() => {
@@ -96,8 +106,11 @@ export default () => {
           key="delete"
           title="是否删除此菜单?"
           onConfirm={async () => {
-            await deleteMenus({ ids: record.id?.toString() });
+            const list = record.children ? loopMenuId(record.children) : [];
+            list.push(record.id);
+            await deleteMenus({ ids: list.join() });
             action?.reload(true);
+            message.success('删除成功');
           }}
           okText="是"
           cancelText="否"
